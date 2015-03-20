@@ -106,6 +106,7 @@
     <Compile Include="BinaryVision.cs" />
     <Compile Include="Chapter2.cs" />
     <Compile Include="CppDetection.cs" />
+    <Compile Include="DataStructures.cs" />
     <Compile Include="Detection.cs" />
     <Compile Include="Edges.cs" />
     <Compile Include="EyeWinkChecker.cs" />

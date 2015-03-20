@@ -18,7 +18,7 @@ namespace CV
             {
                 Cv.WaitKey();
             }*/
-             res = Closing(img.Grey(), 3, 3);
+             res = Closing(img.Gray(), 3, 3);
             res = Opening(res, 3, 3);
             res = AdaptiveThreshhold(res, 101, 5);
             using (new CvWindow("original", res))
@@ -30,15 +30,15 @@ namespace CV
         #region threshholds, dilation, erosion, opening, closing
         public static IplImage Threshhold(IplImage image, double threshhold)
         {
-            IplImage binary = image.Grey().Clone();
-            Cv.Threshold(image.Grey(), binary, threshhold, 255, ThresholdType.Binary);
+            IplImage binary = image.Gray().Clone();
+            Cv.Threshold(image.Gray(), binary, threshhold, 255, ThresholdType.Binary);
             return binary;
         }
 
         public static IplImage AdaptiveThreshhold(IplImage image, int blockSize, int offset)
         {
-            IplImage binary = image.Grey().Clone();
-            Cv.AdaptiveThreshold(image.Grey(), binary, 255, AdaptiveThresholdType.MeanC, ThresholdType.Binary, blockSize, offset);
+            IplImage binary = image.Gray().Clone();
+            Cv.AdaptiveThreshold(image.Gray(), binary, 255, AdaptiveThresholdType.MeanC, ThresholdType.Binary, blockSize, offset);
             return binary;
         }
 

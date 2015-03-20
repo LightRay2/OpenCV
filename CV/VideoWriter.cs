@@ -12,15 +12,16 @@ namespace CV
         string address = @"output.avi";
         string address2 = @"tanya.avi";
         string addressAlbumPaper = "AlbumPaper.wmv";
+        string addressAim = "Aim.wmv";
         public delegate bool FrameChecker(IplImage image, out IplImage transformedImage);
 
         public VideoWriter()
         {
-            CheckVideoFile(addressAlbumPaper, AlbumPaper.Check, true);
+            CheckVideoFile(addressAim, AlbumPaper.Check, true,0);
             // WriteToAviFile(address2);
         }
 
-        public static void CheckVideoFile(string filename, FrameChecker Checker, bool showTransformedImage)
+        public static void CheckVideoFile(string filename, FrameChecker Checker, bool showTransformedImage, int startFromFrame = 0)
         {
             using (var capture = CvCapture.FromFile(filename))
             using (CvFont font = new CvFont(FontFace.HersheyComplex, 0.7, 0.7))
@@ -28,9 +29,12 @@ namespace CV
             using (CvWindow transformedWindow = new CvWindow("transformed", WindowMode.AutoSize))
             {
                 // (4)カメラから画像をキャプチャし，ファイルに書き出す
-                for (int frames = 0; frames < capture.FrameCount; frames++)
+                int frames = 0;
+                for (; frames < startFromFrame; frames++) 
+                    capture.QueryFrame();
+                for (; frames < capture.FrameCount; frames++)
                 {
-                    IplImage frame = capture.QueryFrame(),   transformedImage;
+                    IplImage frame = capture.QueryFrame(), transformedImage;
                     if (frame == null) break;
                     string str = string.Format("{0}[frame]", frames);
 
@@ -48,7 +52,7 @@ namespace CV
                     {
                         break;
                     }
-                    if (key == ' ' || frames == 0)
+                    if (key == ' ' || frames == startFromFrame)
                     {
                         CvWindow.WaitKey();
                     }

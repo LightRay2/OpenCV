@@ -44,11 +44,11 @@ namespace CV
                 Cv2.CvtColor(src, gray, ColorConversion.BgrToGray, 0);
 
                 // Detect faces
-                Rect[] faces = cascade.DetectMultiScale(
+                OpenCvSharp.CPlusPlus.Rect[] faces = cascade.DetectMultiScale(
                     gray, 1.08, 2, HaarDetectionType.ScaleImage, new Size(30, 30));
 
                 // Render all detected faces
-                foreach (Rect face in faces)
+                foreach (var face in faces)
                 {
                     var center = new Point
                     {

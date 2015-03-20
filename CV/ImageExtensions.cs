@@ -9,9 +9,9 @@ namespace CV
 {
     static class ImageExtensions
     {
-        public static IplImage Grey(this IplImage image){
+        public static IplImage Gray(this IplImage image){
             if (image.NChannels == 1)
-                return image;
+                return image.Clone();
             IplImage res = new IplImage(image.Size, BitDepth.U8, 1);
             Cv.CvtColor(image, res, ColorConversion.BgrToGray);
             return res;
@@ -27,6 +27,13 @@ namespace CV
             IplImage hls = image.Same();
             Cv.CvtColor(image, hls, ColorConversion.BgrToHls);
             return hls;
+        }
+
+        public static IplImage FromGrayToBgr(this IplImage image)
+        {
+            IplImage bgr = new IplImage(image.Size, image.Depth, 3);
+            Cv.CvtColor(image, bgr, ColorConversion.GrayToBgr);
+            return bgr;
         }
 
         public static IplImage ChangeSize(this IplImage image, double k)

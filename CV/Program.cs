@@ -79,7 +79,20 @@ namespace CV
                 chapter2.SkinDetection(img);
             }*/
 
-            new VideoWriter();
+
+            //using (var img = new IplImage(@"images/triangle.png", LoadMode.Color))
+            //{
+            //    IplImage transformedImage;
+            //    AlbumPaper.Check(img, out transformedImage);
+            //    using(new CvWindow(img))
+            //    using (new CvWindow(transformedImage))
+            //    {
+            //        Cv.WaitKey();
+            //    }
+            //}
+       //     IplImage xxx;
+         //   AlbumPaper.Check(new IplImage(@"images/rect.png", LoadMode.Color), out xxx);
+           new VideoWriter();
         }
     }
 }

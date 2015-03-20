@@ -63,11 +63,11 @@ namespace CV
         }
 
 
-        public void Show4Pictures(IplImage a, IplImage b, IplImage c, IplImage d)
+        public static IplImage Show4Pictures(IplImage a, IplImage b, IplImage c, IplImage d)
         {
-            Show4Pictures(Cv.GetMat(a), Cv.GetMat(b), Cv.GetMat(c), Cv.GetMat(d), a.Depth, a.NChannels);
+            return Show4Pictures(Cv.GetMat(a), Cv.GetMat(b), Cv.GetMat(c), Cv.GetMat(d), a.Depth, a.NChannels);
         }
-        public void Show4Pictures(CvMat a, CvMat b, CvMat c, CvMat d, BitDepth depth = BitDepth.U8, int channels = 1)
+        public static IplImage Show4Pictures(CvMat a, CvMat b, CvMat c, CvMat d, BitDepth depth = BitDepth.U8, int channels = 1)
         {
             IplImage image = new IplImage(a.Width, a.Height, depth, channels);
             int sizeX = image.Width/2,
@@ -86,10 +86,7 @@ namespace CV
             d.Resize(image);
             Cv.ResetImageROI(image);
 
-            using (new CvWindow(image))
-            {
-                Cv.WaitKey();
-            }
+            return image;
         }
 
         public static IplImage SkinDetection(IplImage image)

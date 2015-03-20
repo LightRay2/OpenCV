@@ -21,7 +21,7 @@ namespace CV
             int cornerCount = 150000;
             using (IplImage dstImg1 = image.Clone())
             using (IplImage dstImg2 = dstImg1.Clone())
-            using (IplImage srcImgGray = image.Grey())
+            using (IplImage srcImgGray = image.Gray())
             using (IplImage eigImg = new IplImage(srcImgGray.GetSize(), BitDepth.F32, 1))
             using (IplImage tempImg = new IplImage(srcImgGray.GetSize(), BitDepth.F32, 1))
             {
@@ -56,8 +56,8 @@ namespace CV
             // call cv::initModule_nonfree() before using SURF/SIFT.
             Cv2.InitModule_NonFree();
 
-            using (IplImage obj = imageSrc.Grey())
-            using (IplImage image = scene.Grey())
+            using (IplImage obj = imageSrc.Gray())
+            using (IplImage image = scene.Gray())
             using (IplImage objColor = Cv.CreateImage(obj.Size, BitDepth.U8, 3))
             using (IplImage correspond = Cv.CreateImage(new CvSize(image.Width, obj.Height + image.Height), BitDepth.U8, 1))
             {

@@ -56,7 +56,7 @@ namespace CV
             List<IplImage> histList = GetHistogramList(r, g, b);
 
             var c = new Chapter2();
-            c.Show4Pictures(image, histList[0], histList[1], histList[2]);
+            Chapter2.Show4Pictures(image, histList[0], histList[1], histList[2]);
         }
 
         public void DrawHLSHist(IplImage image)
@@ -72,7 +72,7 @@ namespace CV
             List<IplImage> histList = GetHistogramList(h, l, s);
 
             var c = new Chapter2();
-            c.Show4Pictures(image, histList[0], histList[1], histList[2]);
+            Chapter2.Show4Pictures(image, histList[0], histList[1], histList[2]);
         }
 
         public List<IplImage> GetHistogramList(params IplImage[] images)

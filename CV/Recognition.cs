@@ -39,7 +39,7 @@ namespace CV
         public static IplImage TemplateChamfer(IplImage image)
         {
             IplImage res = new IplImage(image.Size, BitDepth.F32, 1);
-            var edgeImage = Edges.CannyEdges(image.Grey(), 100, 200);
+            var edgeImage = Edges.CannyEdges(image.Gray(), 100, 200);
             edgeImage.Threshold(edgeImage, 127, 255, ThresholdType.BinaryInv);
             edgeImage.DistTransform(res, DistanceType.L2, 3);
             return res;

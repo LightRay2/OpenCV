@@ -36,17 +36,25 @@ namespace CV
             return res;
         }
 
-        public static IplImage GetAndApplyAffineMatrix(IplImage image)
+        public static IplImage GetAndApplyAffineMatrix(IplImage image, CvPoint2D32f[] src=null, CvPoint2D32f[] dst=null)
         {
             //4 points for perspective transformation
             //CvMat.PerspectiveTransform()
              //   Cv.WarpPerspective()
             IplImage res = image.Same();
-            CvMat mat = CvMat.AffineTransform(new CvPoint2D32f[]{
+            CvMat mat;
+            if (src == null) //demo version
+            {
+                mat = CvMat.AffineTransform(new CvPoint2D32f[]{
                     new CvPoint2D32f( 0,0), new CvPoint2D32f(1,0), new CvPoint2D32f(0,1)},
-                new CvPoint2D32f[]{ 
+                    new CvPoint2D32f[]{ 
                     new CvPoint2D32f( 0,0), new CvPoint2D32f(1,0), new CvPoint2D32f(0,2.5)}
-                );
+                    );
+            }
+            else
+            {
+                mat = CvMat.AffineTransform(src, dst);
+            }
             Cv.WarpAffine(image, res, mat, Interpolation.Cubic);
             return res;
         }

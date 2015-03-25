@@ -41,10 +41,9 @@ namespace CV
 
         public static IplImage CannyEdges(IplImage image, double threshhold1=7, double threshhold2=250)
         {
-            image = image.Gray();
 
-            IplImage res = image.Same();
-            Cv.Canny(image, res, threshhold1, threshhold2);
+            IplImage res = image.Gray().Same();
+            Cv.Canny(image.Gray(), res, threshhold1, threshhold2);
             return res;
         }
 
@@ -178,22 +177,19 @@ namespace CV
             return srcImgProb;
         }
 
-        public static void HoughCircles(IplImage image)
+        public static IplImage HoughCircles(IplImage image)
         {
-            using (IplImage res = CannyEdges(image.Gray()))
+            IplImage res = image.Clone();
             using (CvMemStorage storage = new CvMemStorage())
             {
-                CvSeq circles = image.Gray().HoughCircles(storage, HoughCirclesMethod.Gradient, 1, 20, 150, 100 ,5,0);//upper treshhold for canny, thresh for centers, min radius, max radius 
+                CvSeq circles = image.Gray().HoughCircles(storage, HoughCirclesMethod.Gradient, 1, 10, 250, 100 ,2,0);//upper treshhold for canny, thresh for centers, min radius, max radius 
                 for (int i = 0; i < circles.Total; i++)
                 {
                     CvCircleSegment c = circles.GetSeqElem<CvCircleSegment>(i).Value;
-                    res.DrawCircle(c.Center, (int)c.Radius, CvColor.Blue,3);
-                }
-                using (new CvWindow(res))
-                {
-                    Cv.WaitKey();
+                    res.DrawCircle(c.Center, (int)c.Radius, CvColor.Red,4);
                 }
             }
+            return res;
         }
     }
 }

@@ -40,15 +40,16 @@ namespace CV
             var filtered = FilterCloseLines(lines, LengthToDist: 20);
             // filtered = filtered.GetRange(4, 4); //test for big lines with min 200
             var parallLines = GetParallelCouples(filtered, maxAngleDif: 20);
-            var rects = GetPossibleRects(ref parallLines, minArea : 30.0*20.0);
+            var rects = GetPossibleRects(ref parallLines, minArea : 30.0*20.0, minWidhthToHeigth : 1, maxWidthToHeight: 2.2);
             rects = FilterByPerimeter(rects, minPart: 0.95);
-
+            
             //дальше важный этап, который должен отсечь почти все ложные отклики
             //смотрим цвет по обе стороны от линии внутри прямоугольников, должен быть одинаковый
             //сначала берем точку внутри, затем делаем несколько шагов наружу в поисках такой же
             //(пока закомментировал, т к удаляет часть правильных откликов)
            // rects = FilterRectsByColor(smoothed, rects);
 
+            rects = FilterOuterRect(rects);
 
             IplImage imgRects = image.EmptyClone();
             imgRects.Zero();
@@ -58,11 +59,28 @@ namespace CV
                     imgRects = Line.DrawLines(imgRects, false, rect.rectLines);
             }
 
-            transformedImage = Chapter2.Show4Pictures(smoothed, imgLightEdges.FromGrayToBgr(), Line.DrawLines(imgRects, true, filtered.ToArray()), imgRects);
+            //transformedImage = Chapter2.Show4Pictures(smoothed, imgLightEdges.FromGrayToBgr(), Line.DrawLines(imgRects, true, filtered.ToArray()), imgRects);
+            
+            
             //transformedImage = Line.DrawLines(imgLightEdges, true, filtered[4], filtered[5], filtered[6], filtered[7]);
             //transformedImage = filtered;
             // transformedImage = Edges.LineSegments( imgLightEdges, 5);
             //transformedImage = Edges.GetBigContours(imgLightEdges, 100);
+            
+          //  transformedImage = imgRects;
+
+            IplImage[] toShow = new IplImage[4];
+            IplImage empty = new IplImage(300, 200, image.Depth, 3);
+            empty.Set(CvColor.Wheat);
+            for (int i = 0; i < 4; i++)
+            {
+                toShow[i] = rects.Count > i ? rects[0].StretchIntoImage(image, 300, 200) : empty;
+                toShow[i] = Edges.HoughCircles(toShow[i]);
+            }
+
+
+            transformedImage = Chapter2.Show4Pictures(toShow[0], toShow[1], toShow[2], toShow[3]);
+
             return true;
 
 
@@ -238,6 +256,48 @@ namespace CV
             }
             return res;
         }
+
+        static double DistFromParallelLine(Rect rect, Line sourceLine)
+        {
+            int lineIndex = new List<Line>(rect.sourceLines).IndexOf(sourceLine);
+            return rect.sourceLines[lineIndex].center.DistanceTo(
+                rect.sourceLines[(lineIndex + 2) % 4].center
+                    );
+        }
+
+
+        static List<Rect> FilterOuterRect(List<Rect> sourceRects)
+        {
+            var res = new List<Rect>(sourceRects);
+            Dictionary<Line, List<Rect>> dict = new Dictionary<Line, List<Rect>>();
+
+            foreach(Rect rect in sourceRects) //тут бежим по линиям, из которых все строилось
+                foreach(Line line in rect.sourceLines)
+                {
+                    if(!dict.ContainsKey(line))
+                        dict.Add(line, new List<Rect>());
+                    dict[line].Add(rect);
+                }
+
+            foreach (var entry in dict)
+            {
+                var rects = entry.Value;
+                for (int i = 0; i < rects.Count ; i++)
+                    for (int j = 0; j < rects.Count; j++)
+                    {
+                        double one = DistFromParallelLine(rects[i], entry.Key) ;
+                        double two = DistFromParallelLine(rects[j], entry.Key) ;
+                        if (!DoubleEqual(one, two) && one < two && res.Contains(rects[j]))
+                            res.Remove(rects[j]);  //удалили внешний прямоугольник
+                    }
+            }
+            
+            //todo !!! после обработки еще возможны пересекающиеся прямоугольники, например, кадр 600
+
+
+            return res;
+        }
+
         //old
         public static void AddInfoInPoint(IplImage image, Func<IplImage, int, int, string> GetText)
         {

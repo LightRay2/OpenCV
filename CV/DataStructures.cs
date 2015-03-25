@@ -206,6 +206,51 @@ namespace CV
             }
             return true;
         }
+
+        public IplImage StretchIntoImage(IplImage sourceImage, int width, int height)
+        {
+            IplImage res = sourceImage.Clone();// new IplImage(width, height, sourceImage.Depth, sourceImage.NChannels);
+            //дальше ищем длинную верхнюю прямую
+            Line upLine=null, downLine = null;
+            double longLength = rectLines.Max(x=>x.length);
+            for(int i =0; i < 4; i++){
+                if(rectLines[i].length == longLength){
+                    Line one = rectLines[i];
+                    Line two = rectLines[(i+2)%4];
+                    upLine = one.center.Y < two.center.Y ? one : two;
+                    downLine = one.center.Y < two.center.Y ? two : one; 
+                    break;
+                }
+            }
+
+            var upLeft = upLine.a.X < upLine.b.X ? upLine.a : upLine.b;
+            var upRight = upLine.a.X < upLine.b.X ? upLine.b : upLine.a;
+            var downRight = downLine.a.X < downLine.b.X ? downLine.b : downLine.a;
+
+            bool fromLeftToRight = upLine.a.X < upLine.b.X; 
+            var srcPoints = new CvPoint2D32f[]{ 
+                    new CvPoint2D32f((float)upLeft.X, (float)upLeft.Y) ,
+                    new CvPoint2D32f((float)upRight.X, (float)upRight.Y) ,
+                    new CvPoint2D32f((float)downRight.X, (float)downRight.Y) 
+                };
+            
+            var dstPoints = new CvPoint2D32f[]{ 
+                     new CvPoint2D32f((float)upLeft.X, (float)upLeft.Y) ,
+                    new CvPoint2D32f((float)upLeft.X + width, (float)upLeft.Y) ,
+                    new CvPoint2D32f((float)upLeft.X + width, (float)upLeft.Y + height) 
+                };
+
+            res = Transformations.GetAndApplyAffineMatrix(res,
+                srcPoints,
+                dstPoints);
+
+            //дальше вырезаем нужный фрагмент
+
+            res.ROI = new CvRect((int)upLeft.X, (int)upLeft.Y, width, height);
+            IplImage res2 = new IplImage(width, height, sourceImage.Depth, sourceImage.NChannels);
+            res.Copy(res2);
+            return res2;
+        }
     }
 
     public static class PointExtension
